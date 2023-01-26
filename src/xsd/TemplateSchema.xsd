@@ -1,0 +1,1466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" xml:lang="en" version="1.2">
+    <xs:annotation>
+        <xs:appinfo>Structural Template XML Schema</xs:appinfo>
+        <xs:documentation>v1.2 - Revised on March 23, 2022</xs:documentation>
+    </xs:annotation>
+
+    <!-- Element list -->
+    <xs:element name="Template">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This is the root element. The content of this element will be the variables, validations and model elements.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Variables"/>
+                <xs:element ref="Validations" minOccurs="0"/>
+                <xs:element ref="Model"/>
+            </xs:sequence>
+            <xs:attribute name="Name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">The value is used to show it in the templates tree view.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Variables">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element contains the groups that will be shown in the properties form. The groups could be up to 5.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Group" maxOccurs="5"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Group">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element contains the declared inputs in the template.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Input" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">This element defines the declared items in the properties form. This inputs later will be used as variables in the modeling and validations parts.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="Validation" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                        <xs:attribute name="Name" type="xs:string" use="required" form="qualified">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">Name of the variable to be referenced later in the template.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="Description" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">Label of the properties in the form, if not defined Name will be used.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="Type" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">The type of the variables, the types supported are:
+                                    <ul>
+                                        <li>Int</li>
+                                        <li>Double</li>
+                                        <li>Quantity</li>
+                                        <li>Bool</li>
+                                        <li>String </li>
+                                        <li>Material</li>
+                                        <li>Section</li>
+                                        <li>Combo(<em>comma separated list</em>)</li>
+                                        <li>Table</li>
+                                    </ul>
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:pattern value="Int"/>
+                                    <xs:pattern value="Double"/>
+                                    <xs:pattern value="Quantity"/>
+                                    <xs:pattern value="Bool"/>
+                                    <xs:pattern value="String "/>
+                                    <xs:pattern value="Material"/>
+                                    <xs:pattern value="Section"/>
+                                    <xs:pattern value="Combo\(.+\)"/>
+                                    <xs:pattern value="Table\[.\]\[.+\]"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="Minimum" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">Optional validation attribute with the minimum limit, for Int, Double and Quantity types.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="Default" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">The default value that the variable will take the first time that the form is shown. 
+                                    <p>For Quantity you can write different unit systems separated by "|”. i.e.  “1.0 in|2 cm”</p>
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="DataType" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">This attribute is only used when the type is Quantity, and defines how the units will be shown in the properties form, following the selected configuration in the physical modeler. The Available data types are listed in Annex A.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="Maximum" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">Optional validation attribute with the maximum limit, for Int, Double and Quantity types.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="IsVisible" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">Attribute to verify if the property is visible or not, you can use a condition that use all previously defined inputs.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="Name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Name to use as reference during modeling.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Description" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Title of the group used in the form properties. If not defined Name will be used.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+
+
+    <xs:element name="Validation">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element contains a set of validations defined by the user, this could be Warnings or Errors. This type of validations will be run after variable inputs. So, this could contain conditions that uses 1 or more input variables values. These validations will be shown in the message log. </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute ref="Condition" use="required"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Validations">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element contains a set of validations defined by the user, this could be Warnings or Errors. This type of validations will be run after variable inputs. So, this could contain conditions that uses 1 or more input variables values. These validations will be shown in the message log.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Warning" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">This element is used to define a warning with a customized condition. The content will be the message shown in the log.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute ref="Condition" use="required"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="Error" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">This element is used to define an error with a customized condition. The content will be the message shown in the log.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute ref="Condition" use="required"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Model" type="ModelElements">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element contains all the parametrized model elements, for example Nodes, Members, Surfaces, etc.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:complexType name="ModelElements">
+        <xs:sequence>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="Loop" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="If" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Property" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Section" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Node" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Member" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Surface" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Region" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Dimensions" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Polygon" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Hydrostatic" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="LoadGroup" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="LoadCase" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="UniformPressure" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="VariablePressure" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="LateralPressure" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="Section">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define a new prismatic section.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Property" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">This element is used to set the properties variables to the section. The available properties for rectangular section are YD and ZD.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:attribute name="Name" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">Name of the property (YD or ZD)</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="YD"/>
+                                    <xs:enumeration value="ZD"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="Value" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">The value of the dimension. This value could be an equation using any input variable.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="Type" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">The type of the property. Int, Double or Quantity</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="Int"/>
+                                    <xs:enumeration value="Double"/>
+                                    <xs:enumeration value="Quantity"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="DataType" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">The data type if the Type is Quantity.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="Name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Name of the section. If the section already exists an increasing number between parenthesis will be assigned to the name. i.e. NAME (1).</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Shape" use="optional" default="Rectangle">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Shape of the section. Rectangular shape is the only available for now.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Rectangle"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Node">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define a Node in the template model.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="ID" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">The unique ID used to future reference.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attributeGroup ref="XYZCoords"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Surface">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define a Surface in the template model.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element name="Loop" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">This sub-element of Surface is used to define a collection connectivity corners. This could be any number of nodes inside the loop.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="Node" minOccurs="0" maxOccurs="unbounded">
+                                    <xs:complexType>
+                                        <xs:attribute ref="ID" use="required"/>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                            <xs:attributeGroup ref="LoopVars"/>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Node" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">This sub-element of Surface is used to define the Surface connectivity corners. This could be any number of nodes.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:attribute ref="ID" use="required"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute ref="ID" use="optional"/>
+            <xs:attribute name="Thickness" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Thickness of the surface</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Material" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Material of the surface</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Attribute" default="Undefined" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Optional attribute to define surface type.
+                        <ul>
+                            <li>Wall</li>
+                            <li>WALL_TANK</li>
+                            <li>Slab</li>
+                            <li>SLAB_TANK</li>
+                            <li>Undefined (default)</li>
+                        </ul>
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Wall"/>
+                        <xs:enumeration value="WALL_TANK"/>
+                        <xs:enumeration value="Slab"/>
+                        <xs:enumeration value="SLAB_TANK"/>
+                        <xs:enumeration value="Undefined"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="Alignment" default="Center" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Optional normal alignment type.
+                        <ul>
+                            <li>Center(default)</li>
+                            <li>Top</li>
+                            <li>Bottom</li>
+                        </ul>
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Center"/>
+                        <xs:enumeration value="Top"/>
+                        <xs:enumeration value="Bottom"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="Region">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define a Surface Region in the template model.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element name="Loop" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">This sub-element of Region is used to define a collection connectivity corners. This could be any number of nodes inside the loop.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="Node" minOccurs="0" maxOccurs="unbounded">
+                                    <xs:complexType>
+                                        <xs:attribute ref="ID" use="required"/>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                            <xs:attributeGroup ref="LoopVars"/>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Node" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">This sub-element of Region is used to define the connectivity corners. This could be any number of nodes.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:attribute ref="ID" use="required"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute ref="ID" use="optional"/>
+            <xs:attribute name="Name" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Thickness of the region (if not defined will take parent surface value)</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Description" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Material of the region (if not defined will take parent surface value)</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Alignment" default="Center" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Optional normal alignment type.
+                        <ul>
+                            <li>Center(default)</li>
+                            <li>Top</li>
+                            <li>Bottom</li>
+                        </ul>
+                        <p>(if not defined will take parent surface value)</p>
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Center"/>
+                        <xs:enumeration value="Top"/>
+                        <xs:enumeration value="Bottom"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="Surface" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Unique ID of the parent surface. </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Member">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define a liner member in the template model.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="EndOffset" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute ref="ID" use="optional"/>
+            <xs:attribute name="N1" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Initial node ID</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="N2" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Final node ID</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Section" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Section name</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Material" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Material name</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Attribute" use="optional" default="Undefined">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Optional attribute to define member type.
+                        <ul>
+                            <li>Column</li>
+                            <li>Beam</li>
+                            <li>Brace</li>
+                            <li>Undefined (default)</li>
+                        </ul>
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Column"/>
+                        <xs:enumeration value="Beam"/>
+                        <xs:enumeration value="Brace"/>
+                        <xs:enumeration value="Undefined"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="Alignment" default="GeometricCentroid" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Optional attribute to define member alignment.
+                        <ul>
+                            <li>MidDepthLeft</li>
+                            <li>MidDepthCentre</li>
+                            <li>MidDepthRight</li>
+                            <li>TopLeft</li>
+                            <li>TopCentre</li>
+                            <li>TopRight</li>
+                            <li>BottomLeft</li>
+                            <li>BottomCenter</li>
+                            <li>BottomRight</li>
+                            <li>GeometricCentroid (Default)</li>
+                            <li>BottomInLineWithGeometricCentroid</li>
+                            <li>LeftInLineWithGeometricCentroid</li>
+                            <li>RightInLineWithGeometricCentroid</li>
+                            <li>TopInLineWithGeometricCentroid</li>
+                        </ul>
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="MidDepthLeft"/>
+                        <xs:enumeration value="MidDepthCentre"/>
+                        <xs:enumeration value="MidDepthRight"/>
+                        <xs:enumeration value="TopLeft"/>
+                        <xs:enumeration value="TopCentre"/>
+                        <xs:enumeration value="TopRight"/>
+                        <xs:enumeration value="BottomLeft"/>
+                        <xs:enumeration value="BottomCenter"/>
+                        <xs:enumeration value="BottomRight"/>
+                        <xs:enumeration value="GeometricCentroid"/>
+                        <xs:enumeration value="BottomInLineWithGeometricCentroid"/>
+                        <xs:enumeration value="LeftInLineWithGeometricCentroid"/>
+                        <xs:enumeration value="RightInLineWithGeometricCentroid"/>
+                        <xs:enumeration value="TopInLineWithGeometricCentroid"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="EndOffset">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This sub-element is used to define the members end offsets, the last defined for each position will be used.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="Position" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Start or End. Defines the position of the offset on the member</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Start"/>
+                        <xs:enumeration value="End"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="Axis" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Local or Global. Defines if the coordinates will be in local or global system.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Local"/>
+                        <xs:enumeration value="Global"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attributeGroup ref="XYZCoords"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Property">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element modifies any defined property value. The list of properties by element and their names are listed in the Annex B.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="Element" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">The element which its property will be modified.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="ID" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">The element ID to modify the property of a specific element in the model.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">The name of the property to be modified.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Value" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">The new value that will be assigned to the property. This value could be an equation.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Point">
+        <xs:annotation>
+            <xs:documentation xml:lang="en"/>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attributeGroup ref="XYZCoords"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Dimensions">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define linear dimensions that will be drawn in the model.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="Point"/>
+            </xs:sequence>
+            <xs:attribute name="IsClosed" type="xs:boolean" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Defines if the initial and last point will be joined by a dimension or not.
+                        <ul>
+                            <li>TRUE, the dimension will join the initial and final point.</li>
+                            <li>FALSE, the dimension will not join the initial and final point.</li>
+                        </ul>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Hydrostatic">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define a hydrostatic load for surfaces.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="Polygon" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">This sub-element of Hydrostatic element is used to group all the points that defines the polygon in plane XZ that the fluid covers.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Surface" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">This sub-element of Hydrostatic element is used to define which surfaces will receive the variable/uniform load generated by the fluid.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:attribute name="ID" type="xs:string" use="required">
+                                <xs:annotation>
+                                    <xs:documentation xml:lang="en">Unique ID of the surface.</xs:documentation>
+                                </xs:annotation>
+                            </xs:attribute>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Loop" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">This sub-element of Hydrostatic is used to define a collection surfaces that will receive the pressure. There could be any number of surfaces inside the loop. </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:sequence maxOccurs="unbounded">
+                                <xs:element name="Surface" maxOccurs="unbounded">
+                                    <xs:annotation>
+                                        <xs:documentation xml:lang="en">This sub-element of Hydrostatic element is used to define which surfaces will receive the variable/uniform load generated by the fluid.</xs:documentation>
+                                    </xs:annotation>
+                                    <xs:complexType>
+                                        <xs:attribute name="ID" type="xs:string" use="required">
+                                            <xs:annotation>
+                                                <xs:documentation xml:lang="en">Unique ID of the surface.</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:attribute>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                            <xs:attributeGroup ref="LoopVars"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="Y" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Hydrostatic load vertical level.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Density" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Density of the fluid.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute ref="LoadConditionID" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Polygon">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This sub-element of Hydrostatic element is used to group all the points that defines the polygon in plane XZ that the fluid covers. </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="Point" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">This sub-element of Polygon sub-element is used to define the connectivity points of the polygon.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Loop" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">This sub-element of Polygon is used to define a collection connectivity points. There could be any number of nodes inside the loop.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:sequence maxOccurs="unbounded">
+                                <xs:element ref="Point"/>
+                            </xs:sequence>
+                            <xs:attributeGroup ref="LoopVars"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="LateralPressure">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define a lateral soil pressure on surfaces.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element name="Surface" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">You can include several Surfaces that will be loaded with the same lateral pressure load magnitude and direction.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:attribute name="Id" type="xs:string" use="required">
+                                <xs:annotation>
+                                    <xs:documentation xml:lang="en">Unique ID of the surface.</xs:documentation>
+                                </xs:annotation>
+                            </xs:attribute>
+                            <xs:attribute name="Sign" use="optional" default="1">
+                                <xs:annotation>
+                                    <xs:documentation xml:lang="en">Change the direction of the loading if you assign -1. By default is 1.</xs:documentation>
+                                </xs:annotation>
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:int">
+                                        <xs:enumeration value="1"/>
+                                        <xs:enumeration value="-1"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:attribute>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Loop" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">As an option you can define a loop inside a LateralPressure. Inside the loop you can include Surfaces that will be loaded.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="Surface" maxOccurs="unbounded">
+                                    <xs:annotation>
+                                        <xs:documentation xml:lang="en">You can include several Surfaces that will be loaded with the same lateral pressure load magnitude and direction.</xs:documentation>
+                                    </xs:annotation>
+                                    <xs:complexType>
+                                        <xs:attribute name="ID" type="xs:string" use="required">
+                                            <xs:annotation>
+                                                <xs:documentation xml:lang="en">Unique ID of the surface.</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:attribute>
+                                        <xs:attribute name="Sign" use="optional" default="1">
+                                            <xs:annotation>
+                                                <xs:documentation xml:lang="en">Change the direction of the loading if you assign -1. By default is 1.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:int">
+                                                    <xs:enumeration value="1"/>
+                                                    <xs:enumeration value="-1"/>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:attribute>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                            <xs:attributeGroup ref="LoopVars"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="Y0" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Initial level of the soil layer</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="YF" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Final level of the soil layer</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="UnitWeight" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Unitary weight of the soil layer</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Surcharge" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Initial load at Y0</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Color" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">RGB color of the line draw over surfaces referenced by this load in hexadecimal notation (i.e. #FFFFFF).</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="LineStyle" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Line Style of the line draw over surfaces referenced by this load. 
+                        <ul>
+                            <li>Continuous (__) (default)  </li>
+                            <li>Dot (…) </li>
+                            <li>Dashed (---) </li>
+                            <li>DashDot (-.-.-) </li>
+                            <li>DashDotDot (-..-..-) </li>
+                        </ul>
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Continuous"/>
+                        <xs:enumeration value="Dot"/>
+                        <xs:enumeration value="Dashed"/>
+                        <xs:enumeration value="DashDot"/>
+                        <xs:enumeration value="DashDotDot"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute ref="LoadConditionID" use="required"/>
+            <xs:attribute name="Direction" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Direction of the pressure load.
+                        <ul>
+                            <li>Global X</li>
+                            <li>Global Y</li>
+                            <li>Global Z</li>
+                            <li>Local z</li>
+                        </ul>
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="GlobalX"/>
+                        <xs:enumeration value="GlobalY"/>
+                        <xs:enumeration value="GlobalZ"/>
+                        <xs:enumeration value="Local3"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="If">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element defines a conditional command. The content of this command could be two different elements, "Then" elements that will be executed if their condition is TRUE and "Else" elements that will be executed if their condition is FALSE.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Then" maxOccurs="unbounded"/>
+                <xs:element ref="Else" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute ref="Condition" use="required"/>
+        </xs:complexType>
+
+    </xs:element>
+
+    <xs:element name="Then" type="ModelElements">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element contains the set of elements or commands that will be executed if the condition is TRUE.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="Else" type="ModelElements">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element contains the set of elements or commands that will be executed if the condition is FALSE.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="Loop">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element defines a loop command. This is a command that repeats their content iterating the defined variable from start to end value. This command could be nested inside another loop. The step is fixed to into 1.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="Loop" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="If" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="Property" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="Node" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="Section" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="Member" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="Surface" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="Region" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="Dimensions" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="Polygon" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="Hydrostatic" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="LoadGroup" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="LoadCase" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="UniformPressure" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="VariablePressure" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="LateralPressure" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attributeGroup ref="LoopVars"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="LoadCase">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define a Load Case in the template model.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute ref="ID" use="required"/>
+            <xs:attribute name="Name" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Name assigned to the load case.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Description" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Description of the load case.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attributeGroup ref="LoadTypes"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="LoadGroup">
+        <xs:annotation>
+            <xs:documentation xml:lang="en"/>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute ref="ID" use="required"/>
+            <xs:attribute name="Name" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Name assigned to the load group.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Description" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Description of the load group.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attributeGroup ref="LoadTypes"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UniformPressure">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define a uniform pressure to a surface.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:group ref="SurfaceRef"/>
+                    <xs:element name="Loop" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">As an option you can define a loop inside a UniformPressure, inside the loop you can include Surfaces and/or Regions that will be loaded. </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:group ref="SurfaceRef"/>
+                            </xs:sequence>
+                            <xs:attributeGroup ref="LoopVars"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="Surface" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Unique ID to the surface.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Region" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Unique ID to the region.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Magnitude" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Magnitude of the pressure load</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Direction" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Direction of the pressure load.
+                        <ul>
+                            <li>Global X</li>
+                            <li>Global Y</li>
+                            <li>Global Z</li>
+                            <li>Local x</li>
+                            <li>Local y</li>
+                            <li>Local z</li>
+                        </ul>
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="GlobalX"/>
+                        <xs:enumeration value="GlobalY"/>
+                        <xs:enumeration value="GlobalZ"/>
+                        <xs:enumeration value="Local1"/>
+                        <xs:enumeration value="Local2"/>
+                        <xs:enumeration value="Local3"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute ref="LoadConditionID" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="VariablePressure">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This element is used to define a variable pressure to a surface and/or region. The pressure plane is defined by three points and magnitudes.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:group ref="SurfaceRef"/>
+                    <xs:element name="Loop" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">As an option you can define a loop inside a VariablePressure, inside the loop you can include Surfaces and/or Regions that will be loaded. </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:group ref="SurfaceRef"/>
+                            </xs:sequence>
+                            <xs:attributeGroup ref="LoopVars"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="Surface" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Unique ID to the surface.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Region" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Unique ID to the region.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Node1" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Node to define the loading pressure plane. </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Node2" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Node to define the loading pressure plane. </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Node3" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Node to define the loading pressure plane. </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Magnitude1" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Magnitude of the pressure load at Node1</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Magnitude2" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Magnitude of the pressure load at Node2</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Magnitude3" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Magnitude of the pressure load at Node3</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Direction" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Direction of the pressure load.
+                        <ul>
+                            <li>Global X</li>
+                            <li>Global Y</li>
+                            <li>Global Z</li>
+                            <li>Local x</li>
+                            <li>Local y</li>
+                            <li>Local z</li>
+                        </ul>
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="GlobalX"/>
+                        <xs:enumeration value="GlobalY"/>
+                        <xs:enumeration value="GlobalZ"/>
+                        <xs:enumeration value="Local1"/>
+                        <xs:enumeration value="Local2"/>
+                        <xs:enumeration value="Local3"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute ref="LoadConditionID" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Element groups -->    
+    <xs:group name="SurfaceRef">
+        <xs:sequence>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="Surface" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">In addition to the Surface defined in the parent element attributes, you can include several Surfaces that will be loaded with the same uniform load magnitude and direction.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:attribute name="Id" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">Unique ID of the surface.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="Region" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">In addition to the Region defined in the parent element attributes, you can include several Regions that will be loaded with the same uniform load magnitude and direction.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:attribute name="Id" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">Unique ID of the region.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:group>
+
+    <!-- Attribute list -->
+    <xs:attribute name="Condition" type="xs:string">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">This attribute defines a bool equation. Is important do not use reserved characters for XML documents, see Introduction.</xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+
+    <xs:attribute name="ID" type="xs:string">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">The unique ID used to future reference.</xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+
+    <xs:attribute name="LoadConditionID" type="xs:string">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">Unique ID of the load case or load group</xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+
+    <xs:attribute name="X" type="xs:string">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">X coordinate</xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Y" type="xs:string">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">Y coordinate</xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Z" type="xs:string">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">Z coordinate</xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+
+    <!-- Attribute Groups -->
+    <xs:attributeGroup name="LoadTypes">
+        <xs:attribute name="Type" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Property to classify the load case or group:
+                    <ul>
+                        <li>Staad_Dead</li>
+                        <li>Staad_Live</li>
+                        <li>Staad_RoofLive</li>
+                        <li>Staad_Wind</li>
+                        <li>Staad_Seismic</li>
+                        <li>Staad_Snow</li>
+                        <li>Staad_Fluids</li>
+                        <li>Staad_Soil</li>
+                        <li>Staad_RainWater_Ice</li>
+                        <li>Staad_Ponding</li>
+                        <li>Staad_Dust</li>
+                        <li>Staad_Traffic</li>
+                        <li>Staad_Temperature</li>
+                        <li>Staad_Imperfection</li>
+                        <li>Staad_Accidental</li>
+                        <li>Staad_Flood</li>
+                        <li>Staad_Ice</li>
+                        <li>Staad_WindOnIce</li>
+                        <li>Staad_CraneHook</li>
+                        <li>Staad_Mass</li>
+                        <li>Staad_Gravity</li>
+                        <li>Staad_Push</li>
+                        <li>Staad_ModalAnalysis</li>
+                        <li>Staad_None</li>
+                    </ul>
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="Staad_Dead"/>
+                    <xs:enumeration value="Staad_Live"/>
+                    <xs:enumeration value="Staad_RoofLive"/>
+                    <xs:enumeration value="Staad_Wind"/>
+                    <xs:enumeration value="Staad_Seismic"/>
+                    <xs:enumeration value="Staad_Snow"/>
+                    <xs:enumeration value="Staad_Fluids"/>
+                    <xs:enumeration value="Staad_Soil"/>
+                    <xs:enumeration value="Staad_RainWater_Ice"/>
+                    <xs:enumeration value="Staad_Ponding"/>
+                    <xs:enumeration value="Staad_Dust"/>
+                    <xs:enumeration value="Staad_Traffic"/>
+                    <xs:enumeration value="Staad_Temperature"/>
+                    <xs:enumeration value="Staad_Imperfection"/>
+                    <xs:enumeration value="Staad_Accidental"/>
+                    <xs:enumeration value="Staad_Flood"/>
+                    <xs:enumeration value="Staad_Ice"/>
+                    <xs:enumeration value="Staad_WindOnIce"/>
+                    <xs:enumeration value="Staad_CraneHook"/>
+                    <xs:enumeration value="Staad_Mass"/>
+                    <xs:enumeration value="Staad_Gravity"/>
+                    <xs:enumeration value="Staad_Push"/>
+                    <xs:enumeration value="Staad_ModalAnalysis"/>
+                    <xs:enumeration value="Staad_None"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="XYZCoords">
+        <xs:attribute ref="X" use="optional"/>
+        <xs:attribute ref="Y" use="optional"/>
+        <xs:attribute ref="Z" use="optional"/>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="LoopVars">
+        <xs:attribute name="Variable" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Name of the variable that will be used as a reference in the following equations.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Start" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Initial value of the variable.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="End" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Final value of the variable.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <!-- General documentation -->
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
+            <article xmlns="http://www.w3.org/1999/xhtml">
+                <h1>XML Basics</h1>
+                <p>This document describes the syntax to create a XML Template file, that could be used as an input for the Structural Template Wizard.</p>
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="170" width="570" id="GUID-9E222731-B00B-4C01-A4DA-9544EC27FB36">
+                    <title>XML Structure Diagram</title>
+                    <style type="text/css">
+                        .code {
+                        font-family: 'Droid Sans Mono', 'Consolas', monospace;
+                        fill: blue;
+                        font-size: 12pt;
+                        text-align: left;
+                        text-anchor: left;
+                        }
+                        .attribute {
+                        fill: red;
+                        }
+                        .attvalue {
+                        fill: purple;
+                        font-weight: bold;
+                        }
+                        .value {
+                        fill: black;
+                        font-weight: bold;
+                        }
+                        .callout {
+                        font-size: 10pt;
+                        text-align: left;
+                        text-anchor: left;
+                        font-family: 'Arial Narrow', Arial, Helvetica, sans-serif;
+                        fill: #62BB45;
+                        }
+                    </style>
+                    <g transform="translate(5,40)">
+                        <g class="code">
+                            <text>&lt;TemplateData <tspan class="attribute">Template</tspan>="<tspan class="attvalue">Modular tank</tspan>"></text>
+                            <text x="35" y="20">&lt;Group></text>
+                            <text x="70" y="40">&lt;Variable <tspan class="attribute">Name</tspan>="<tspan class="attvalue">n</tspan>"  <tspan class="attribute">Type</tspan>="<tspan class="attvalue">Int</tspan>"><tspan class="value">2</tspan>&lt;/Variable></text>
+                            <text x="70" y="60">&lt;Variable <tspan class="attribute">Name</tspan>="<tspan class="attvalue">bt</tspan>"  <tspan class="attribute">Type</tspan>="<tspan class="attvalue">Quantity</tspan>"><tspan class="value">16 in </tspan>&lt;/Variable></text>
+                            <text x="35" y="80">    &lt;/Group></text>
+                            <text y="100">&lt;/TemplateData></text>
+                        </g>
+                        <g style="stroke: #62BB45; fill: none;">
+                            <g id="opening-tag-callout">
+                                <rect width="68" height="18" x="32" y="6"/>
+                                <path d="M 66,6 v-35 h20"/>
+                            </g>
+                            <g id="attribute-callout">
+                                <rect width="215" height="18" x="120" y="-14"/>
+                                <path d="M 220,-14 v-15 h20"/>
+                            </g>
+                            <g id="group-callout">
+                                <rect width="495" height="38" x="68" y="26" stroke-dasharray="10,2"/>
+                                <path d="M 380,26 v-55 h20"/>
+                            </g>
+                            <g id="value-callout">
+                                <rect width="50" height="18" x="410" y="45"/>
+                                <path d="M 430,64 v25 h20"/>
+                            </g>
+                            <g id="closing-tab-callout">
+                                <rect width="78" height="18" x="32" y="66"/>
+                                <path d="M 71,84 v32 h20"/>
+                            </g>
+                        </g>
+                        <g class="callout">
+                            <text x="90" y="-25">Opening tag</text>
+                            <text x="243" y="-25">Attribute</text>
+                            <text x="455" y="93">Value</text>
+                            <text x="95" y="120">Closing tag</text>
+                            <text x="400" y="-25">XML code contained in</text>
+                            <text x="400" y="-10">an XML tag &#8220;Group&#8221;</text>
+                        </g>
+                    </g>
+                </svg>
+                <p><strong>Note:</strong> It is recommended that you use an XML-aware editor when creating and editing XML files. Microsoft's <a href="https://code.visualstudio.com/" target="_blank">Visual Studio Code</a> with the <a href="XML Language Support extension" target="_blank">XML Language Support extension</a> from Red Hat is a free and easy-to-use example.</p>
+                <h2>Reserved Markup Characters</h2>
+                <p>Some special characters are not allowed in XML code (known as reserved markup characters). In order to utilize these in attribute or element values, you must utilize the following character escape sequences:</p>
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <td>Name</td>
+                            <td>Symbol</td>
+                            <td>Escape Sequence</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Double quote</td>
+                            <td>"</td>
+                            <td><code>&amp;quot;</code> or <code>&amp;#34;</code></td>
+                        </tr>
+                        <tr>
+                            <td>Single quote (apostrophe)</td>
+                            <td>'</td>
+                            <td><code>&amp;apos;</code> or <code>&amp;#39;</code></td>
+                        </tr>
+                        <tr>
+                            <td>Lesser than</td>
+                            <td>&lt;</td>
+                            <td><code>&amp;lt;</code> or <code>&amp;#60;</code></td>
+                        </tr>
+                        <tr>
+                            <td>Greater than</td>
+                            <td>></td>
+                            <td><code>&amp;gt;</code> or <code>&amp;#62;</code></td>
+                        </tr>
+                        <tr>
+                            <td>Ampersand</td>
+                            <td>&amp;</td>
+                            <td><code>&amp;amp;</code> or <code>&amp;#38;</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>For example, to write a condition "A &lt; 5", you need to use:</p>
+                <code class="block">&lt;If Condition="a&amp;lt;5" /></code>
+            </article>
+            
+            <article xmlns="http://www.w3.org/1999/xhtml">
+                <h1>Functions</h1>
+                <p>The allowed functions that can be used in the XML equations are:</p>
+                <dl outputclass="deflist">
+                    <dlentry>
+                        <dt>Pi()</dt>
+                        <dd>Constant value of π (3.14159265358)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Sin(x)</dt>
+                        <dd>Sine trigonometrical function of x in radians (i.e. Sin(π/2)=1)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Cos(x)</dt>
+                        <dd>Cosine trigonometrical function of x in radians (i.e. Cos(π/2)=0)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Tan(x)</dt>
+                        <dd>Tangent trigonometrical function of x in radians (i.e. Tan(π)=0)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>ASin(x)</dt>
+                        <dd>Arcsine in radians of x number (i.e. ASin(1)= π/2)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>ACos(x)</dt>
+                        <dd>Arccosine in radians of x number (i.e. ACos(0)= π/2)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>ATan(x)</dt>
+                        <dd>Arctangent in radians of x number (i.e. ATan(0)= π)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>ATan2(y,x)</dt>
+                        <dd>Angle whose tangent is the quotient of two specified numbers (i.e. ATan2(2,1)=1.126)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Abs(x)</dt>
+                        <dd>Returns the absolute value of x (i.e. Abs(-1)=1)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Sqrt(x)</dt>
+                        <dd>Returns the square root of x (i.e. Sqrt(4)=2)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Max(x, y)</dt>
+                        <dd>Returns the maximum value between x and y (i.e. Max(1, 2)=2)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Min(x, y)</dt>
+                        <dd>Returns the minimum value between x and y (i.e. Min(1, 2)=1)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Pow(x, y)</dt>
+                        <dd>Returns the value of x to the power of y (xy) (i.e. Pow(2, 2)=4)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Radians(x)</dt>
+                        <dd>Returns the converted value of x from degrees to radians (i.e. Radians(180)= π)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Degrees(x)</dt>
+                        <dd>Returns the converted value of x from radians to degrees (i.e. Degrees(π)=180)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Exp(x)</dt>
+                        <dd>Returns e raised to the power of x (ex) (i.e. Exp(1)= 2.718282)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Log(x)</dt>
+                        <dd>Returns the natural (base e) logarithm of the specified x (i.e. Log(2)= 0.693147)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Log10(x)</dt>
+                        <dd>Returns the base 10 logarithm of a specified number (i.e. Log10(100)=2)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>Concat(x,y,…)</dt>
+                        <dd>Returns the concatenated text of all parameters (i.e. Concat('X',1+1)=X2)</dd>
+                    </dlentry>
+                    <dlentry>
+                        <dt>IF(c,x,y)</dt>
+                        <dd>Returns whether x or y depending if the condition c is true or false (i.e. If(1=2,0,1)=1)</dd>
+                    </dlentry>
+                </dl>
+            </article>
+        </xs:documentation>
+    </xs:annotation>
+</xs:schema>
