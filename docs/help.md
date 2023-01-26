@@ -21,5 +21,6 @@ Some special characters are not allowed in XML code (known as reserved markup ch
 | Ampersand | & | `&amp;` or `&#38;` |
 
 For example, to write a condition "A < 5", you need to use:
-```<If Condition=a&lt;5" />
+```xml
+<If Condition=a&lt;5" />
 ```
