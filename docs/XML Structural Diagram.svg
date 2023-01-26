@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" 
+    height="170" 
+    width="545"
+    id="GUID-9E222731-B00B-4C01-A4DA-9544EC27FB36">
+    <title>XML Structure Diagram</title>
+    <defs>
+        <path id="arrow-head" d="m 1,0 10,-3 v 6 z" style="fill: white !Important;"/>
+    </defs>
+    <style type="text/css">
+        .code {
+            font-family: 'Droid Sans Mono', 'Consolas', monospace;
+            fill: blue;
+            font-size: 12pt;
+            text-align: left;
+            text-anchor: left;
+        }
+        .attribute {
+            fill: red;
+        }
+        .attvalue {
+            fill: purple;
+            font-weight: bold;
+        }
+        .value {
+            fill: black;
+            font-weight: bold;
+        }
+        .callout {
+            font-size: 10pt;
+            text-align: left;
+            text-anchor: left;
+            font-family: 'Arial Narrow', Arial, Helvetica, sans-serif;
+            fill: #62BB45;
+        }
+    </style>
+    <g transform="translate(5,40)">
+        <g class="code">
+            <text>&lt;TemplateData <tspan class="attribute">Template</tspan>=&quot;<tspan class="attvalue">Modular tank</tspan>&quot;&gt;</text>
+            <text x="35" y="20">&lt;Group&gt;</text>
+            <text x="70" y="40">&lt;Variable <tspan class="attribute">Name</tspan>=&quot;<tspan class="attvalue">n</tspan>&quot;  <tspan class="attribute">Type</tspan>=&quot;<tspan class="attvalue">Int</tspan>&quot;&gt;<tspan class="value">2</tspan>&lt;/Variable&gt;</text>
+            <text x="70" y="60">&lt;Variable <tspan class="attribute">Name</tspan>=&quot;<tspan class="attvalue">bt</tspan>&quot;  <tspan class="attribute">Type</tspan>=&quot;<tspan class="attvalue">Quantity</tspan>&quot;&gt;<tspan class="value">16 in</tspan>&lt;/Variable&gt;</text>
+            <text x="35" y="80">    &lt;/Group&gt;</text>
+            <text y="100">&lt;/TemplateData&gt;</text>
+        </g>
+        <g style="stroke: #62BB45; fill: none;">
+            <g id="opening-tag-callout">
+                <rect width="68" height="18" x="32" y="6"/>
+                <path d="M 66,6 v-35 h20"/>
+            </g>
+            <g id="attribute-callout">
+                <rect width="205" height="18" x="120" y="-14"/>
+                <path d="M 220,-14 v-15 h20"/>
+            </g>
+            <g id="group-callout">
+                <rect width="462" height="38" x="68" y="26" stroke-dasharray="10,2"/>
+                <path d="M 380,26 v-55 h20"/>
+            </g>
+            <g id="value-callout">
+                <rect width="45" height="18" x="385" y="45"/>
+                <path d="M 405,64 v25 h20"/>
+            </g>
+            <g id="closing-tab-callout">
+                <rect width="78" height="18" x="32" y="66"/>
+                <path d="M 71,84 v32 h20"/>
+            </g>
+        </g>
+       <g class="callout">
+           <text x="90" y="-25">Opening tag</text>
+           <text x="243" y="-25">Attribute</text>
+           <text x="430" y="93">Value</text>
+           <text x="95" y="120">Closing tag</text>
+           <text x="400" y="-25">XML code contained in</text>
+           <text x="400" y="-10">an XML tag &#8220;Group&#8221;</text>
+       </g>
+    </g>
+</svg>
