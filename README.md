@@ -1,5 +1,8 @@
 # sppm-template-schema
-XML schema and documentation for STAAD.Pro Physical Modeler (SPPM) structure wizard templates.
+
+Copyright © Bentley Systems, Incorporated. All rights reserved. See [LICENSE](LICENSE) for license terms and full copyright notice.
+
+XML schema and documentation for STAAD.Pro Physical Modeler (SPPM) structure wizard templates. These templates are used by the STAAD.Pro Physical Modeler application to allow for parametric modeling of custom structures.
 
 ## STAAD.Pro version
 
