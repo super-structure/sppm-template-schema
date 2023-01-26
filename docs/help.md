@@ -6,7 +6,7 @@ This section documents the XML schema used for Structure Wizard template files.
 
 This document describes the syntax to create a XML Template file, that could be used as an input for the Structural Template Wizard.
 
-![Annotated description of basic XML structure](XML%20Structural%20Diagram.svg "Basic XML structure")
+![Annotated description of basic XML structure](image/XML%20Structural%20Diagram.svg "Basic XML structure")
 
 **Note:** It is recommended that you use an XML-aware editor when creating and editing XML files. Microsoft's [Visual Studio Code](https://code.visualstudio.com/) with the [XML Language Support extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml) from Red Hat is a free and easy-to-use example.
 
